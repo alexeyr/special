@@ -48,6 +48,8 @@ abstract class ScalanizerPluginConfig extends ScalanizerConfig {
     NonWrapper(name = "CanBuildFrom")
   ).map(w => (w.name, w)).toMap
 
-  val pluginConfigs: Seq[PluginConfig] = Nil
+  val pluginConfigs: Seq[PluginConfig] = Seq(
+    PluginConfig("../special-cpp-gen/target/scala-2.11/classes")
+  )
 }
 
