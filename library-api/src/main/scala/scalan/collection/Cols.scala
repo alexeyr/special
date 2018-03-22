@@ -4,6 +4,11 @@ import scala.reflect.ClassTag
 import scalan.OverloadId
 import scalan.macros.typeclass
 
+object Status extends Enumeration {
+  val OK = Value
+  val Err = Value(10)
+}
+
 trait Col[A] {
   def builder: ColBuilder
   def arr: Array[A]
@@ -35,7 +40,7 @@ trait ColBuilder {
     c.length
   }
   def functorArg(arr: Array[Double])(evF: Functor[Array]) = evF.map(arr)(x => x + 1)
-  def arrayMut(@mut arr: Array[Double]): Unit = ???
+  def arrayMut(@mut arr: Array[Double]): Status.Value = ???
 //  def useFunctor(arr: Array[Double]) = evF.map(arr)(x => x + 1)
 }
 

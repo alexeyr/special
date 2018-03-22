@@ -24,7 +24,7 @@ class ColBuilder {
     int32_t ddmvm(const Array<double>& v);
     Array<double> functorArg(const Array<double>& arr,
                              const Functor<Array>& evF);
-    void arrayMut(Array<double>& arr);
+    Value arrayMut(Array<double>& arr);
 };
 
 template <template F> class Functor {
@@ -61,7 +61,7 @@ class ColBuilder {
     int32_t ddmvm(const Array<double>& v);
     Array<double> functorArg(const Array<double>& arr,
                              const Functor<Array>& evF);
-    void arrayMut(Array<double>& arr);
+    Value arrayMut(Array<double>& arr);
 };
 
 template <template F> class Functor {
