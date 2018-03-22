@@ -35,6 +35,7 @@ trait ColBuilder {
     c.length
   }
   def functorArg(arr: Array[Double])(evF: Functor[Array]) = evF.map(arr)(x => x + 1)
+  def arrayMut(@mut arr: Array[Double]): Unit = ???
 //  def useFunctor(arr: Array[Double]) = evF.map(arr)(x => x + 1)
 }
 
