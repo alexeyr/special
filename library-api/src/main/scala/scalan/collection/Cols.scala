@@ -41,6 +41,10 @@ trait ColBuilder {
   }
   def functorArg(arr: Array[Double])(evF: Functor[Array]) = evF.map(arr)(x => x + 1)
   def arrayMut(@mut arr: Array[Double]): Status.Value = ???
+  @throws[Exception]
+  def throwing(): Int = ???
+  @throws[Exception]
+  def throwing2[A](): Col[A] = ???
 //  def useFunctor(arr: Array[Double]) = evF.map(arr)(x => x + 1)
 }
 

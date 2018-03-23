@@ -28,6 +28,8 @@ class ColBuilder {
     int ddmvm(double[] v, int32_t& result);
     double[] functorArg(double[] arr, const Functor<Array>& evF);
     Value arrayMut(double[] arr);
+    int throwing(int32_t& result);
+    template <class A> int throwing2(Col<A>& result);
 };
 template <template <class> class F> class Functor {
   public:

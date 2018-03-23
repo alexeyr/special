@@ -32,7 +32,9 @@ package scalan.collection {
         c.length
       };
       def functorArg(arr: Rep[WArray[Double]])(evF: Functor[WArray]): Rep[WArray[Double]] = evF.map[Double, Double](arr)(fun(((x: Rep[Double]) => x.+(toRep(1.asInstanceOf[Int])))));
-      def arrayMut(@mut arr: Rep[WArray[Double]]): Rep[WValue] = Predef.???
+      def arrayMut(@mut arr: Rep[WArray[Double]]): Rep[WValue] = Predef.???;
+      @throws[Exception] def throwing: Rep[Int] = Predef.???;
+      @throws[Exception] def throwing2[A]: Rep[Col[A]] = Predef.???
     };
     @Typeclass trait Functor[F[_]] extends Def[Functor[F]] {
       implicit def cF: Cont[F];
