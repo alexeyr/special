@@ -79,7 +79,8 @@ lazy val meta = Project("meta", file("meta"))
       libraryDependencies ++= Seq(
         "org.scala-lang" % "scala-compiler" % scalaVersion.value,
         "com.github.kxbmap" %% "configs-java7" % "0.3.0",
-        "com.trueaccord.lenses" %% "lenses" % "0.4.12"
+        "com.trueaccord.lenses" %% "lenses" % "0.4.12",
+        "com.lihaoyi" %% "pprint" % "0.5.3" // temporary, as dependency for plugins
       ),
       fork in Test := true,
       fork in run := true)
