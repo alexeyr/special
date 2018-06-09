@@ -534,9 +534,10 @@ object ScalanAst {
       isLazy: Boolean,
       isImplicit: Boolean,
       expr: SExpr,
-      isAbstract: Boolean = false,
-      annotations: List[SArgAnnotation] = Nil,
-      isTypeDesc: Boolean = false
+      isMutable: Boolean,
+      isAbstract: Boolean,
+      annotations: List[SArgAnnotation],
+      isTypeDesc: Boolean
   ) extends SBodyItem with SEntityItem {
     val symbol = SEntityItemSymbol(owner, name, DefType.Val)
     override def signature = (name, Nil)
@@ -726,6 +727,7 @@ object ScalanAst {
       impFlag: Boolean,  /** true if this arg is has 'implicit' declaration */
       overFlag: Boolean, /**                     has 'override' declaration */
       valFlag: Boolean,  /**                     has 'val'      declaration */
+      isMutable: Boolean, /**                    has 'var'      declaration */
       name: String,
       tpe: STpeExpr,
       default: Option[SExpr],
@@ -936,7 +938,7 @@ object ScalanAst {
           ("c" + a.name, STraitCall("Cont", List(STraitCall(a.name))))
         else
           ("e" + a.name, STraitCall("Elem", List(STraitCall(a.name))))
-        SClassArg(owner, true, false, true, argName, tpe, None, Nil, true)
+        SClassArg(owner, impFlag = true, overFlag = false, valFlag = true, isMutable = false, argName, tpe, None, Nil, isTypeDesc = true)
       }
       SClassArgs(args)
     }

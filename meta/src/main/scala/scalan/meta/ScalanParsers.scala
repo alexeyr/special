@@ -259,9 +259,21 @@ trait ScalanParsers[+G <: Global] {
 
   def valDef(owner: SSymbol, vd: ValDef, parentScope: Option[Tree])(implicit ctx: ParseCtx): SValDef = {
     val tpeRes = optTpeExpr(owner, vd.tpt)
-    val isImplicit = vd.mods.isImplicit
-    val isLazy = vd.mods.isLazy
-    returnParsed(vd, SValDef(owner, vd.name, tpeRes, isLazy, isImplicit, parseExpr(owner, vd.rhs)))
+    val annotations = parseValDefAnnotations(owner, vd)
+    val expr = parseExpr(owner, vd.rhs)
+    returnParsed(vd, sValDef(owner, vd.name, tpeRes, vd.mods, expr, annotations))
+  }
+
+  def sValDef(owner: SSymbol,
+              name: String,
+              tpe: Option[STpeExpr],
+              mods: Modifiers,
+              expr: SExpr,
+              annotations: List[SArgAnnotation]
+             ): SValDef = {
+    // TODO determine based on type or add to parameters
+    val isTypeDesc = false
+    SValDef(owner, name, tpe, mods.isLazy, mods.isImplicit, expr, mods.isMutable, mods.hasAbstractFlag, annotations, isTypeDesc)
   }
 
   def traitDef(owner: SSymbol, td: ClassDef, parentScope: Option[Tree])(implicit ctx: ParseCtx): STraitDef = {
@@ -321,13 +333,18 @@ trait ScalanParsers[+G <: Global] {
   def classArg(owner: SSymbol, vd: ValDef)(implicit ctx: ParseCtx): SClassArg = {
     val tpe = tpeExpr(owner, vd.tpt)
     val default = optExpr(owner, vd.rhs)
-    val isOverride = vd.mods.isAnyOverride
-    val isVal = vd.mods.isParamAccessor
-    val annotations = parseAnnotations(vd)((n, ts, as) =>
+    val mods = vd.mods
+    val isOverride = mods.isAnyOverride
+    val isVal = mods.isParamAccessor
+    val annotations = parseValDefAnnotations(owner, vd)
+    val isTypeDesc = TypeDescTpe.unapply(tpe).isDefined
+    SClassArg(owner, mods.isImplicit, isOverride, isVal, mods.isMutable, vd.name, tpe, default, annotations, isTypeDesc)
+  }
+
+  private def parseValDefAnnotations(owner: SSymbol, vd: compiler.ValDef)(implicit ctx: ParseCtx) = {
+    parseAnnotations(vd)((n, ts, as) =>
       SArgAnnotation(n, ts.map(parseType), as.map(parseExpr(owner, _)))
     )
-    val isTypeDesc = TypeDescTpe.unapply(tpe).isDefined
-    SClassArg(owner, vd.mods.isImplicit, isOverride, isVal, vd.name, tpe, default, annotations, isTypeDesc)
   }
 
   def classArgs(owner: SSymbol, vds: List[ValDef])(implicit ctx: ParseCtx): SClassArgs = SClassArgs(vds.filter(!isEvidenceParam(_)).map(classArg(owner, _)))
@@ -543,9 +560,7 @@ trait ScalanParsers[+G <: Global] {
   def methodArg(owner: SSymbol, vd: ValDef)(implicit ctx: ParseCtx): SMethodArg = {
     val tpe = tpeExpr(owner, vd.tpt)
     val default = optExpr(owner, vd.rhs)
-    val annotations = parseAnnotations(vd)((n, ts, as) =>
-      SArgAnnotation(n, ts.map(parseType), as.map(parseExpr(owner, _)))
-    )
+    val annotations = parseValDefAnnotations(owner, vd)
     val isOverride = vd.mods.isAnyOverride
     val isTypeDesc = tpe match {
       case STraitCall(tname, _) if tname == "Elem" || tname == "Cont" => true
@@ -704,7 +719,7 @@ trait ScalanParsers[+G <: Global] {
       STuple(args.map(parseExpr(owner, _)), tree2Type(tree))
     case Block(init, last) => SBlock(init.map(parseExpr(owner, _)), parseExpr(owner, last), tree2Type(tree))
     case q"$mods val $tname: $tpt = $expr" =>
-      SValDef(owner, tname, optTpeExpr(owner, tpt), mods.isLazy, mods.isImplicit, parseExpr(owner, expr))
+      sValDef(owner, tname, optTpeExpr(owner, tpt), mods, parseExpr(owner, expr), Nil)
     case q"if ($cond) $th else $el" =>
       SIf(parseExpr(owner, cond), parseExpr(owner, th), parseExpr(owner, el), tree2Type(tree))
     case q"$expr: $tpt" => SAscr(parseExpr(owner, expr), tpeExpr(owner, tpt), tree2Type(tree))

@@ -108,9 +108,9 @@ class ScalanParsersTests extends BaseMetaTests with Examples {
     testSClass("class A extends B with C",
       classA.copy(ancestors = L(TC("B", Nil).toTypeApply, TC("C", Nil).toTypeApply)))
     testSClass("class Edge[V,E]", classEdgeVE)
-    testSClass("class Edge[V,E](val x: V){ def f[A <: T](x: A, y: (A,T)): Int }",
+    testSClass("class Edge[V,E](var x: V){ def f[A <: T](x: A, y: (A,T)): Int }",
       classEdgeVE.copy(
-        args = SClassArgs(L(SClassArg(classEdgeVE.symbol, false, false, true, "x", TC("V", Nil), None))),
+        args = SClassArgs(L(SClassArg(classEdgeVE.symbol, false, false, true, true, "x", TC("V", Nil), None))),
         body = L(MD(classEdgeVE.symbol, "f", L(STpeArg("A", Some(TC("T", Nil)), Nil)),
           L(MAs(L(MA(false, false, "x", TC("A", Nil), None), MA(false, false, "y", T(L(TC("A", Nil), TC("T", Nil))), None)))),
           Some(TpeInt), false, false, None, Nil, None))))
@@ -126,12 +126,12 @@ class ScalanParsersTests extends BaseMetaTests with Examples {
     val obsImpl1Sym = SEntityDefSymbol(us, "ObservableImpl1")
     val obsImpl1 = CD(us, "ObservableImpl1", tpeArgA,
       SClassArgs(Nil),
-      SClassArgs(L(SClassArg(obsImpl1Sym, true, false, true, "eA", TC("Elem", L(TC("A", Nil))), None, Nil, true))),
+      SClassArgs(L(SClassArg(obsImpl1Sym, true, false, true, false, "eA", TC("Elem", L(TC("A", Nil))), None, Nil, true))),
       ancObsA.map(_.toTypeApply), Nil, None, None, false)
     val obsImpl2Sym = SEntityDefSymbol(us, "ObservableImpl2")
     val obsImpl2 = CD(us, "ObservableImpl2", tpeArgA,
       SClassArgs(Nil),
-      SClassArgs(L(SClassArg(obsImpl2Sym, true, false, true, "eA", TC("Elem", L(TC("A", Nil))), None, Nil, true))),
+      SClassArgs(L(SClassArg(obsImpl2Sym, true, false, true, false, "eA", TC("Elem", L(TC("A", Nil))), None, Nil, true))),
       ancObsA.map(_.toTypeApply), Nil, None, None, false)
 
     testModule(reactiveModule,

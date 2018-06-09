@@ -82,8 +82,8 @@ object ScalanAstUtils {
   def genClassArg(owner: SEntitySymbol, argPrefix: String, argName: String, descName: String, descArg: STpeExpr) = {
     SClassArg(
       owner = owner,
-      impFlag = true,
-      overFlag = false, valFlag = true,
+      impFlag = true, overFlag = false,
+      valFlag = true, isMutable = false,
       name = argPrefix + argName,
       tpe = STraitCall(descName, List(descArg)),
       default = None, annotations = Nil, isTypeDesc = true)
