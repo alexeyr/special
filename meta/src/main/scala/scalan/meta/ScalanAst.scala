@@ -776,6 +776,7 @@ object ScalanAst {
 
     def companion: Option[SEntityDef]
 
+    def isAbstract: Boolean
     def isTrait: Boolean
     def asTrait: STraitDef = { assert(this.isInstanceOf[STraitDef], s"$this is not trait"); this.asInstanceOf[STraitDef] }
     def asClass: SClassDef = { assert(this.isInstanceOf[SClassDef], s"$this is not class"); this.asInstanceOf[SClassDef] }
@@ -971,6 +972,7 @@ object ScalanAst {
       selfType: Option[SSelfTypeDef],
       companion: Option[SEntityDef],
       annotations: List[SEntityAnnotation] = Nil) extends SEntityDef with Updatable[STraitDef] {
+    def isAbstract = true
     def isTrait = true
     def signature = (name, Nil)
     val args = SClassArgs(Nil)
@@ -1030,6 +1032,7 @@ object ScalanAst {
 
     def companion = None
 
+    def isAbstract = false
     def isTrait = false
 
     def annotations = Nil
@@ -1113,6 +1116,7 @@ object ScalanAst {
     def tpeArgs: List[STpeArg] = Nil
     def body: List[SBodyItem] = typeDefs ++ traits ++ classes ++ methods
     def companion = None
+    def isAbstract = false
     def isTrait: Boolean = false
     def annotations: List[SEntityAnnotation] = Nil
     val args = SClassArgs(Nil)
