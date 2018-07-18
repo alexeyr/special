@@ -405,7 +405,7 @@ object ScalanAst {
   case class SFunc(params: List[SValDef], res: SExpr,
                    override val exprType: Option[STpeExpr] = None) extends SExpr
 
-  case class SConstr(name: String, args: List[SExpr],
+  case class SConstr(name: String, ts: List[STpeExpr], args: List[SExpr],
                     override val exprType: Option[STpeExpr] = None) extends SExpr
 
   case class SThis(typeName: String,

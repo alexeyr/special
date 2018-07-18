@@ -711,10 +711,17 @@ trait ScalanParsers[+G <: Global] {
     case q"$left = $right" => SAssign(parseExpr(owner, left), parseExpr(owner, right), tree2Type(tree))
     case q"$name.super[$qual].$field" => SSuper(name, qual, field, tree2Type(tree))
     case q"$expr.$tname" => SSelect(parseExpr(owner, expr), tname, tree2Type(tree))
-    case Apply(Select(New(TupleTypeTree(tn)), termNames.CONSTRUCTOR), args) =>
-      SConstr(tn.toString(), args.map(parseExpr(owner, _)), tree2Type(tree))
-    case Apply(Select(New(name), termNames.CONSTRUCTOR), args) =>
-      SConstr(name.toString(), args.map(parseExpr(owner, _)), tree2Type(tree))
+    case Apply(Select(New(typeTree), termNames.CONSTRUCTOR), args) =>
+      val (name, typeArgs) = typeTree match {
+        case TupleTypeTree(tn) =>
+          // FIXME temporary to keep old behavior
+          (tn.toString, Nil)
+        case AppliedTypeTree(typeTree1, typeArgs) =>
+          (typeTree1.toString, typeArgs)
+        case _ =>
+          (typeTree.toString, Nil)
+      }
+      SConstr(name, typeArgs.map(tpeExpr(owner, _)), args.map(parseExpr(owner, _)), tree2Type(tree))
     case Apply(Select(Ident(TermName("scala")), TermName(tuple)), args) if tuple.startsWith("Tuple") =>
       STuple(args.map(parseExpr(owner, _)), tree2Type(tree))
     case Block(init, last) => SBlock(init.map(parseExpr(owner, _)), parseExpr(owner, last), tree2Type(tree))

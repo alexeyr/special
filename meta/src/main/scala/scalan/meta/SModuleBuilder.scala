@@ -58,7 +58,8 @@ class SModuleBuilder(implicit val context: AstContext) {
   def tupleToPair(module: SUnitDef) = {
     new AstTransformer {
       override def constrTransform(constr: SConstr): SConstr = constr match {
-        case SConstr("Tuple2", args, tpe) => SConstr("Pair", args, tpe)
+        case _ if constr.name == "Tuple2" =>
+          constr.copy(name = "Pair")
         case _ => constr
       }
     }.moduleTransform(module)
